@@ -14,3 +14,31 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.mw-600 {
+  max-width: 520px;
+}
+
+.card{
+  transition: 0.3s;
+  transform-style: preserve-3d;
+  position: relative;
+}
+
+.card-face{
+  backface-visibility: hidden;
+}
+
+.is-flipped {
+  transform: rotateY(180deg);
+  background-color: #cbd5e1;
+  color: #fff;
+}
+
+.is-inactive {
+  opacity: 0;
+}
+
+.card-face.card-back-face {
+  transform: rotateY(180deg);
+}
