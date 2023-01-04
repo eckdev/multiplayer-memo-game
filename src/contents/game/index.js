@@ -1,10 +1,11 @@
-import { memo,useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Circle } from "../../components/Circle/index.js";
-import { shuffleData } from "../../utils/shuffleData.js";
-import data from '../../mock.json';
+import { useGameContext } from "../../contexts/GameProvider.js";
 
 const Game = () => {
-  const [cards] = useState(shuffleData.bind(null, data.concat(data)));
+  const { board } = useGameContext();
+  console.log(board)
+  const [cards] = useState(board);
   const [openCards, setOpenCards] = useState([]);
   const [clearedCards, setClearedCards] = useState([]);
   const [moves, setMoves] = useState(0);
@@ -27,21 +28,19 @@ const Game = () => {
   const checkIsInActive = (item) => {
     return clearedCards.includes(item);
   };
-  
 
   const evaluate = useCallback(
     (openCards) => {
-        const [first, second] = openCards;
-        if (cards[first].item === cards[second].item) {
-          setClearedCards((prev) => [...prev, cards[first].item]);
-        }
-        timeout.current = setTimeout(() => {
-          setOpenCards([]);
-        }, 500);
+      const [first, second] = openCards;
+      if (cards[first].item === cards[second].item) {
+        setClearedCards((prev) => [...prev, cards[first].item]);
+      }
+      timeout.current = setTimeout(() => {
+        setOpenCards([]);
+      }, 500);
     },
-    [cards],
-  )
-  
+    [cards]
+  );
 
   useEffect(() => {
     let timeout = null;
@@ -51,12 +50,12 @@ const Game = () => {
     return () => {
       clearTimeout(timeout);
     };
-  }, [openCards,evaluate]);
+  }, [openCards, evaluate]);
 
   return (
     <div className="mw-600 mx-auto">
       <div className="flex flex-wrap justify-center">
-        {cards.map((card, index) => {
+        {cards?.map((card, index) => {
           return (
             <Circle
               key={index}

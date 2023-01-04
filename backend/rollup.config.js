@@ -1,3 +1,4 @@
+const { default: json } = require('@rollup/plugin-json');
 const pkg = require('./package.json');
 
 module.exports = [
@@ -14,5 +15,10 @@ module.exports = [
     output: [
       { file: pkg.main, format: 'cjs' },
     ],
+    plugins: [
+      json({
+        compact: true
+      })
+    ]
   },
 ];

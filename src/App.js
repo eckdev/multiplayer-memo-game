@@ -1,8 +1,8 @@
-import Game from "./contents/game";
+import GameBoard from "./contents/board";
 
 function App() {
   return (
-    <Game />
+    <GameBoard />
   );
 }
 
