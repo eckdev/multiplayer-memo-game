@@ -8,7 +8,6 @@ import Game from "../game/index.js";
 const GameBoard = () => {
   const { setGame, status, players } = useGameContext();
   const { player, setPlayer } = usePlayerContext();
-  console.log(players)
 
   useEffect(() => {
     const onStateChanged = (newGameState) => {

@@ -1,7 +1,9 @@
 import React from "react";
 
-export const Circle = ({ item, clickEvent, isFlipped, isInActive, index }) => {
-  if (isInActive) { isFlipped = true; }
+export const Circle = ({ item, clickEvent, isFlipped, isInActive,index }) => {
+  if (isInActive) {
+    isFlipped = true;
+  }
 
   const handleClick = () => {
     !isFlipped && clickEvent(index);

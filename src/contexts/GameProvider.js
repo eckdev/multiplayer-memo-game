@@ -21,6 +21,7 @@ export function GameProvider({ children }) {
       status: game.state.status,
       players: game.players,
       winner: game.state.winner,
+      openedCards: game.state.openedCards,
       getOtherPlayer,
       setGame,
     }),

@@ -1,23 +1,22 @@
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Circle } from "../../components/Circle/index.js";
 import { useGameContext } from "../../contexts/GameProvider.js";
+import client from '@urturn/client';
 
 const Game = () => {
   const { board } = useGameContext();
-  console.log(board)
-  const [cards] = useState(board);
+  const [cards,setCards] = useState([]);
   const [openCards, setOpenCards] = useState([]);
-  const [clearedCards, setClearedCards] = useState([]);
   const [moves, setMoves] = useState(0);
   const timeout = useRef(null);
 
-  const clickOnCard = (index) => {
+  const clickOnCard = async (cardIndex) => {
     if (openCards.length === 1) {
       setMoves(moves + 1);
-      setOpenCards((prev) => [...prev, index]);
+      setOpenCards((prev) => [...prev, cardIndex]);
     } else {
       clearTimeout(timeout.current);
-      setOpenCards([index]);
+      setOpenCards([cardIndex]);
     }
   };
 
@@ -25,32 +24,39 @@ const Game = () => {
     return openCards.includes(index);
   };
 
-  const checkIsInActive = (item) => {
-    return clearedCards.includes(item);
-  };
 
   const evaluate = useCallback(
-    (openCards) => {
+    async () => {
       const [first, second] = openCards;
       if (cards[first].item === cards[second].item) {
-        setClearedCards((prev) => [...prev, cards[first].item]);
+        await client.makeMove(cards[first]);
       }
+
       timeout.current = setTimeout(() => {
         setOpenCards([]);
       }, 500);
+
     },
-    [cards]
+    [openCards]
   );
 
   useEffect(() => {
     let timeout = null;
     if (openCards.length === 2) {
-      evaluate(openCards);
+      evaluate();
     }
+
     return () => {
       clearTimeout(timeout);
     };
   }, [openCards, evaluate]);
+
+  useEffect(() => {
+    if (board) {
+      setCards(board)
+    }
+  }, [board])
+  
 
   return (
     <div className="mw-600 mx-auto">
@@ -61,7 +67,7 @@ const Game = () => {
               key={index}
               index={index}
               isFlipped={checkIsFlipped(index)}
-              isInActive={checkIsInActive(card.item)}
+              isInActive={card.opened}
               clickEvent={clickOnCard}
               item={card}
             />

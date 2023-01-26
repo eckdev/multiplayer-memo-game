@@ -51,9 +51,11 @@ function onPlayerJoin(player,roomState) {
 function onPlayerMove(player,move,roomState) {
     const {players,state} = roomState;
 
-    if (state !== Status.InGame) {
+    if (state?.status !== Status.InGame) {
         throw new Error("game is not in progress")
     }
+
+    console.log(move)
     
 }
 
