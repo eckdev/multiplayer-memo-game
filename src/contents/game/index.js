@@ -2,21 +2,34 @@ import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Circle } from "../../components/Circle/index.js";
 import { useGameContext } from "../../contexts/GameProvider.js";
 import client from '@urturn/client';
+import { useErrorContext } from "../../contexts/ErrorProvider.js";
+import { usePlayerContext } from "../../contexts/PlayerProvider.js";
 
 const Game = () => {
-  const { board } = useGameContext();
+  const { board,playerIdToMove } = useGameContext();
+  const { player } = usePlayerContext();
+  const { setError } = useErrorContext(); 
   const [cards,setCards] = useState([]);
   const [openCards, setOpenCards] = useState([]);
   const [moves, setMoves] = useState(0);
   const timeout = useRef(null);
 
   const clickOnCard = async (cardIndex) => {
-    if (openCards.length === 1) {
-      setMoves(moves + 1);
-      setOpenCards((prev) => [...prev, cardIndex]);
-    } else {
-      clearTimeout(timeout.current);
-      setOpenCards([cardIndex]);
+    if (player.id === playerIdToMove) {
+      setError(null);
+      if (openCards.length === 1) {
+        setMoves(moves + 1);
+        setOpenCards((prev) => [...prev, cardIndex]);
+      } else {
+        clearTimeout(timeout.current);
+        setOpenCards([cardIndex]);
+      }
+    }
+    else{
+      setError({
+        message: 'IT is not your turn'
+      })
+      return false;
     }
   };
 
@@ -24,12 +37,16 @@ const Game = () => {
     return openCards.includes(index);
   };
 
-
   const evaluate = useCallback(
     async () => {
       const [first, second] = openCards;
-      if (cards[first].item === cards[second].item) {
-        await client.makeMove(cards[first]);
+      const move = {
+        first: cards[first].item,
+        second: cards[second].item
+      }
+      const {error} = await client.makeMove(move);
+      if (error) {
+        setError(error)
       }
 
       timeout.current = setTimeout(() => {
@@ -53,7 +70,7 @@ const Game = () => {
 
   useEffect(() => {
     if (board) {
-      setCards(board)
+      setCards(board);
     }
   }, [board])
   

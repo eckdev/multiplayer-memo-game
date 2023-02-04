@@ -39,17 +39,20 @@ function onRoomStart() {
 
 function onPlayerJoin(player,roomState) {
     const {players,state} = roomState;
+    state.openedCards[player.id]=[];    
     if (players.length === 2) {
         state.board = shuffleData(data.concat(data));
         state.status = Status.InGame;
-        state.openedCards[player.id]=[];
         state.playerIdToMove = players[0].id;
         return {
             state,
             joinable: false
         }
     }
-    return {}
+    return {
+        state,
+        joinable: true
+    }
 }
 
 function onPlayerMove(player,move,roomState) {
@@ -60,16 +63,18 @@ function onPlayerMove(player,move,roomState) {
         throw new Error("game is not in progress")
     }
     
-    // if (state.playerIdToMove !== player.id) {
-    //     throw new Error("It's not your turn! Waiting on other player.");
-    // }
 
-    console.log(move);
-    const cards = state.board.map(x => (x.item === move.item ? {...x,opened:true} : x));
-    state.board = cards;
-    state.openedCards[player.id].push(move);
+    if (state.playerIdToMove !== player.id) {
+        throw new Error("It's not your turn! Waiting on other player.");
+    }
 
+    if (move.first === move.second) {
+        const cards = state.board.map(x => (x.item === move.first ? {...x,opened:true} : x));
+        state.board = cards;
+        state.openedCards[player.id].push(move.first);   
+    }
     state.playerIdToMove = otherPlrID;
+
     return { state };
     
 }

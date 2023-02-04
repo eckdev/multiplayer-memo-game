@@ -1,8 +1,12 @@
+import Error from "./components/Error";
 import GameBoard from "./contents/board";
 
 function App() {
   return (
-    <GameBoard />
+    <>
+      <GameBoard />
+      <Error />
+    </>
   );
 }
 

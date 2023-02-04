@@ -10,7 +10,7 @@ module.exports = [
   // an array for the `output` option, where we can specify
   // `file` and `format` for each target)
   {
-    input: 'src/index.js',
+    input: 'index.js',
     external: ['ms'],
     output: [
       { file: pkg.main, format: 'cjs' },
