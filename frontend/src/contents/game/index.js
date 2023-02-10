@@ -98,7 +98,7 @@ const Game = () => {
                 }
               >
                 <span className="text-2xl font-bold text-slate-500">
-                  {item.id.toUpperCase()}
+                  {item.username.toUpperCase()}
                 </span>
                 <span className="text-2xl font-bold text-slate-500 float-right">
                   {openedCards[item.id].length}

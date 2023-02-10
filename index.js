@@ -50,6 +50,7 @@ function onPlayerJoin(player, roomState) {
         }
     }
     state.board = shuffleData(randomArr.concat(randomArr));
+    console.log(state.board)
     state.status = Status.InGame;
     state.playerIdToMove = players[0].id;
     return {
@@ -98,15 +99,15 @@ function onPlayerMove(player, move, roomState) {
 }
 
 const setWinner = (state,playerId, otherPlayerId) => {
-    if (state.openedCards[playerId] > state.openedCards[otherPlayerId]) {
+    if (state.openedCards[playerId].length > state.openedCards[otherPlayerId].length) {
         state.winner = playerId;
     }
 
-    if (state.openedCards[playerId] < state.openedCards[otherPlayerId]) {
+    if (state.openedCards[playerId].length < state.openedCards[otherPlayerId].length) {
         state.winner = otherPlayerId;
     }
 
-    if (state.openedCards[playerId] === state.openedCards[otherPlayerId]) {
+    if (state.openedCards[playerId].length === state.openedCards[otherPlayerId].length) {
         state.winner = "Draw";
     }
 }

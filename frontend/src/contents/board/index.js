@@ -40,12 +40,16 @@ const GameBoard = () => {
       {status === Status.EndGame && winner && (
         <>
           <Modal open={true} center>
-            <p className="text-2xl font-bold text-slate-500 py-20">{winner !== "Draw" ? `WINNER ${player.id}` : "DRAW"}</p>
+            <p className="text-2xl font-bold text-slate-500 py-20">{winner !== "Draw" ? `WINNER ${winner}` : "DRAW"}</p>
           </Modal>
-          <ReactConfetti
+          {
+            (winner === player.id || winner === 'Draw') &&           
+            <ReactConfetti
             width={windowSize.current[0]}
             height={windowSize.current[1]}
           />
+          }
+
         </>
       )}
       {players?.length === 2 && <Game />}

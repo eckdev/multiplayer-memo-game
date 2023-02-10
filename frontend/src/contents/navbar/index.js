@@ -6,7 +6,7 @@ export const NavBar = () => {
     <nav className="bg-white border-gray-200 px-2 sm:px-4 py-10 rounded dark:bg-gray-800">
       <div className="container flex flex-wrap justify-between items-center mx-auto">
         <a href="/" className="flex">
-            <h1 className="text-3xl font-bold">memory</h1>
+            <h1 className="text-3xl font-bold">memoryly</h1>
         </a>
         <div className="flex md:order-2">
           <Button
