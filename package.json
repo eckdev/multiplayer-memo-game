@@ -1,46 +1,21 @@
 {
-  "name": "multiplayer-memo-game",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "@urturn/client": "^0.2.0",
-    "react": "^18.2.0",
-    "react-confetti": "^6.1.0",
-    "react-dom": "^18.2.0",
-    "react-responsive-modal": "^6.4.1",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
-  },
+  "name": "memorygame",
+  "version": "1.0.0",
+  "description": "multiplayer memory game",
+  "main": "index.js",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "dev": "concurrently \"npm run dev:rollup\" \"npm run dev:runner\" \"npm run dev:frontend\"",
+    "dev:runner": "runner --frontend-port 3000",
+    "dev:rollup": "rollup -c -w",
+    "dev:frontend": "cd frontend && cross-env BROWSER=none PORT=3000 npm start"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "devDependencies": {
-    "autoprefixer": "^10.4.13",
-    "postcss": "^8.4.19",
-    "tailwindcss": "^3.2.4"
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@rollup/plugin-json": "^6.0.0",
+    "@urturn/runner": "^0.3.1",
+    "concurrently": "^7.6.0",
+    "cross-env": "^7.0.3",
+    "rollup": "^3.7.5"
   }
 }

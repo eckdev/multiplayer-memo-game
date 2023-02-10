@@ -1,7 +1,5 @@
 "use strict";
 
-const data = require("./mock.json");
-
 const Status = Object.freeze({
   PreGame: "preGame",
   InGame: "inGame",
@@ -51,7 +49,6 @@ function onPlayerJoin(player, roomState) {
           }])
         }
     }
-    console.log(randomArr)
     state.board = shuffleData(randomArr.concat(randomArr));
     state.status = Status.InGame;
     state.playerIdToMove = players[0].id;
