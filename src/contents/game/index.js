@@ -1,34 +1,31 @@
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Circle } from "../../components/Circle/index.js";
 import { useGameContext } from "../../contexts/GameProvider.js";
-import client from '@urturn/client';
+import client from "@urturn/client";
 import { useErrorContext } from "../../contexts/ErrorProvider.js";
 import { usePlayerContext } from "../../contexts/PlayerProvider.js";
 
 const Game = () => {
-  const { board,playerIdToMove } = useGameContext();
+  const { board, playerIdToMove, openedCards, players } = useGameContext();
   const { player } = usePlayerContext();
-  const { setError } = useErrorContext(); 
-  const [cards,setCards] = useState([]);
+  const { setError } = useErrorContext();
+  const [cards, setCards] = useState([]);
   const [openCards, setOpenCards] = useState([]);
-  const [moves, setMoves] = useState(0);
   const timeout = useRef(null);
 
   const clickOnCard = async (cardIndex) => {
     if (player.id === playerIdToMove) {
       setError(null);
       if (openCards.length === 1) {
-        setMoves(moves + 1);
         setOpenCards((prev) => [...prev, cardIndex]);
       } else {
         clearTimeout(timeout.current);
         setOpenCards([cardIndex]);
       }
-    }
-    else{
+    } else {
       setError({
-        message: 'IT is not your turn'
-      })
+        message: "It's not your turn! Waiting on other player.",
+      });
       return false;
     }
   };
@@ -37,25 +34,21 @@ const Game = () => {
     return openCards.includes(index);
   };
 
-  const evaluate = useCallback(
-    async () => {
-      const [first, second] = openCards;
-      const move = {
-        first: cards[first].item,
-        second: cards[second].item
-      }
-      const {error} = await client.makeMove(move);
-      if (error) {
-        setError(error)
-      }
+  const evaluate = useCallback(async () => {
+    const [first, second] = openCards;
+    const move = {
+      first: cards[first].item,
+      second: cards[second].item,
+    };
+    const { error } = await client.makeMove(move);
+    if (error) {
+      setError(error);
+    }
 
-      timeout.current = setTimeout(() => {
-        setOpenCards([]);
-      }, 500);
-
-    },
-    [openCards]
-  );
+    timeout.current = setTimeout(() => {
+      setOpenCards([]);
+    }, 500);
+  }, [openCards]);
 
   useEffect(() => {
     let timeout = null;
@@ -72,8 +65,7 @@ const Game = () => {
     if (board) {
       setCards(board);
     }
-  }, [board])
-  
+  }, [board]);
 
   return (
     <div className="mw-600 mx-auto">
@@ -92,13 +84,29 @@ const Game = () => {
         })}
       </div>
 
-      <div className="details-container py-10 pl-1">
-        <div className="bg-slate-200 text-slate-900 p-6 rounded-lg">
-          <span className="text-2xl font-bold text-slate-500">Moves</span>
-          <span className="text-2xl font-bold text-slate-500 float-right">
-            {moves}
-          </span>
-        </div>
+      <div className="flex flex-row py-10 pl-1">
+        {players.map((item, index) => {
+          return (
+            <>
+              <div
+                key={index}
+                className={
+                  "flex-1 mr-2 text-slate-900 p-6 rounded-lg " +
+                  (item.id === playerIdToMove
+                    ? "bg-orange-400"
+                    : "bg-slate-200")
+                }
+              >
+                <span className="text-2xl font-bold text-slate-500">
+                  {item.id.toUpperCase()}
+                </span>
+                <span className="text-2xl font-bold text-slate-500 float-right">
+                  {openedCards[item.id].length}
+                </span>
+              </div>
+            </>
+          );
+        })}
       </div>
     </div>
   );

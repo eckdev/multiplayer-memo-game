@@ -1,15 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { useErrorContext } from "../../contexts/ErrorProvider";
+import 'react-responsive-modal/styles.css';
+import { Modal } from "react-responsive-modal";
 
 function Error() {
-  const { error, setError } = useErrorContext();
-  console.log('ERROR',error)
+  const { error } = useErrorContext();
+  const [open, setOpen] = useState(true)
+
+  const onCloseModal = () => setOpen(false);
   return (
     <>
       {error?.message ? (
-            <div className="bg-red-600 fixed top-0">{error.message}</div>
+        <Modal open={open} center onClose={onCloseModal}>
+          <p className="text-2xl font-bold text-slate-500 py-10">{error.message}</p>
+        </Modal>
       ) : (
-        <h1>EYUP</h1>
+        ""
       )}
     </>
   );

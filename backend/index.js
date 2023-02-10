@@ -1,15 +1,15 @@
-'use strict';
+"use strict";
 
 const data = require("./mock.json");
 
 const Status = Object.freeze({
-    PreGame: 'preGame',
-    InGame: 'inGame',
-    EndGame: 'endGame'
+  PreGame: "preGame",
+  InGame: "inGame",
+  EndGame: "endGame",
 });
 
-const shuffleData = array => {
-    let currentIndex = array.length,
+const shuffleData = (array) => {
+  let currentIndex = array.length,
     randomIndex;
 
   while (currentIndex !== 0) {
@@ -26,63 +26,102 @@ const shuffleData = array => {
 };
 
 function onRoomStart() {
-    return {
-        state: {
-            status: Status.PreGame,
-            winner: null,
-            board: [],
-            openedCards: {},
-            playerIdToMove: null
+  return {
+    state: {
+      status: Status.PreGame,
+      winner: null,
+      board: [],
+      openedCards: {},
+      playerIdToMove: null,
+    },
+  };
+}
+
+function onPlayerJoin(player, roomState) {
+  const { players, state } = roomState;
+  state.openedCards[player.id] = [];
+  if (players.length === 2) {
+    const randomArr =  []
+    while (randomArr.length < 8) {
+        let random = Math.floor(Math.random() * 50 + 1)
+        if (!randomArr.find(x => x.item === random)) {
+          randomArr.push(...[{
+            item: random,
+            opened: false
+          }])
         }
     }
-}
-
-function onPlayerJoin(player,roomState) {
-    const {players,state} = roomState;
-    state.openedCards[player.id]=[];    
-    if (players.length === 2) {
-        state.board = shuffleData(data.concat(data));
-        state.status = Status.InGame;
-        state.playerIdToMove = players[0].id;
-        return {
-            state,
-            joinable: false
-        }
-    }
+    console.log(randomArr)
+    state.board = shuffleData(randomArr.concat(randomArr));
+    state.status = Status.InGame;
+    state.playerIdToMove = players[0].id;
     return {
-        state,
-        joinable: true
+      state,
+      joinable: false,
+    };
+  }
+  return {
+    state,
+    joinable: true,
+  };
+}
+
+function onPlayerMove(player, move, roomState) {
+  const { players, state } = roomState;
+  const otherPlrID = getOtherPlayer(players, player.id).id;
+
+  if (state?.status !== Status.InGame) {
+    throw new Error("game is not in progress");
+  }
+
+  if (state.playerIdToMove !== player.id) {
+    throw new Error("It's not your turn! Waiting on other player.");
+  }
+
+  if (move.first === move.second) {
+    const cards = state.board.map((x) =>
+      x.item === move.first ? { ...x, opened: true } : x
+    );
+    state.board = cards;
+    state.openedCards[player.id].push(move.first);
+  }
+
+  if (isEndGame(state)) {    
+    state.status = Status.EndGame;
+    setWinner(state,player.id,otherPlrID);
+    return {
+      state,
+      finished: true,
+    };
+  }
+
+  state.playerIdToMove = otherPlrID;
+
+  return { state };
+}
+
+const setWinner = (state,playerId, otherPlayerId) => {
+    if (state.openedCards[playerId] > state.openedCards[otherPlayerId]) {
+        state.winner = playerId;
+    }
+
+    if (state.openedCards[playerId] < state.openedCards[otherPlayerId]) {
+        state.winner = otherPlayerId;
+    }
+
+    if (state.openedCards[playerId] === state.openedCards[otherPlayerId]) {
+        state.winner = "Draw";
     }
 }
 
-function onPlayerMove(player,move,roomState) {
-    const {players,state} = roomState;
-    const otherPlrID = getOtherPlayer(players, player.id).id;
-    
-    if (state?.status !== Status.InGame) {
-        throw new Error("game is not in progress")
-    }
-    
-
-    if (state.playerIdToMove !== player.id) {
-        throw new Error("It's not your turn! Waiting on other player.");
-    }
-
-    if (move.first === move.second) {
-        const cards = state.board.map(x => (x.item === move.first ? {...x,opened:true} : x));
-        state.board = cards;
-        state.openedCards[player.id].push(move.first);   
-    }
-    state.playerIdToMove = otherPlrID;
-
-    return { state };
-    
-}
-
-const getOtherPlayer = (players, currentPlayerID) => players.find((plr) => plr.id !== currentPlayerID);
+const isEndGame = (state) => {
+  return state.board.every(item => item.opened);
+};
+const getOtherPlayer = (players, currentPlayerID) =>
+  players.find((plr) => plr.id !== currentPlayerID);
 
 module.exports = {
-    onRoomStart,
-    onPlayerJoin,
-    onPlayerMove
+  onRoomStart,
+  onPlayerJoin,
+  onPlayerMove,
 };
