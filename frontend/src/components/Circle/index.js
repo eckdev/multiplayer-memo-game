@@ -11,7 +11,7 @@ export const Circle = ({ item, clickEvent, isFlipped, isInActive,index }) => {
 
   return (
     <div
-      className={`w-24 h-24 rounded-full m-4 bg-gray-600 flex flex-wrap justify-center items-center card 
+      className={`sm:w-24 sm:h-24 w-16 h-16 rounded-full m-4 bg-gray-600 flex flex-wrap justify-center items-center card 
         ${isFlipped ? "is-flipped" : ""} 
       `}
       onClick={handleClick}

@@ -39,18 +39,21 @@ function onPlayerJoin(player, roomState) {
   const { players, state } = roomState;
   state.openedCards[player.id] = [];
   if (players.length === 2) {
-    const randomArr =  []
+    const randomArr = [];
     while (randomArr.length < 8) {
-        let random = Math.floor(Math.random() * 50 + 1)
-        if (!randomArr.find(x => x.item === random)) {
-          randomArr.push(...[{
-            item: random,
-            opened: false
-          }])
-        }
+      let random = Math.floor(Math.random() * 50 + 1);
+      if (!randomArr.find((x) => x.item === random)) {
+        randomArr.push(
+          ...[
+            {
+              item: random,
+              opened: false,
+            },
+          ]
+        );
+      }
     }
     state.board = shuffleData(randomArr.concat(randomArr));
-    console.log(state.board)
     state.status = Status.InGame;
     state.playerIdToMove = players[0].id;
     return {
@@ -82,38 +85,46 @@ function onPlayerMove(player, move, roomState) {
     );
     state.board = cards;
     state.openedCards[player.id].push(move.first);
+    state.playerIdToMove = player.id;
+  } else {
+    state.playerIdToMove = otherPlrID;
   }
 
-  if (isEndGame(state)) {    
+  if (isEndGame(state)) {
     state.status = Status.EndGame;
-    setWinner(state,player.id,otherPlrID);
+    setWinner(state, player.id, otherPlrID);
     return {
       state,
       finished: true,
     };
   }
 
-  state.playerIdToMove = otherPlrID;
-
   return { state };
 }
 
-const setWinner = (state,playerId, otherPlayerId) => {
-    if (state.openedCards[playerId].length > state.openedCards[otherPlayerId].length) {
-        state.winner = playerId;
-    }
+const setWinner = (state, playerId, otherPlayerId) => {
+  if (
+    state.openedCards[playerId].length > state.openedCards[otherPlayerId].length
+  ) {
+    state.winner = playerId;
+  }
 
-    if (state.openedCards[playerId].length < state.openedCards[otherPlayerId].length) {
-        state.winner = otherPlayerId;
-    }
+  if (
+    state.openedCards[playerId].length < state.openedCards[otherPlayerId].length
+  ) {
+    state.winner = otherPlayerId;
+  }
 
-    if (state.openedCards[playerId].length === state.openedCards[otherPlayerId].length) {
-        state.winner = "Draw";
-    }
-}
+  if (
+    state.openedCards[playerId].length ===
+    state.openedCards[otherPlayerId].length
+  ) {
+    state.winner = "Draw";
+  }
+};
 
 const isEndGame = (state) => {
-  return state.board.every(item => item.opened);
+  return state.board.every((item) => item.opened);
 };
 const getOtherPlayer = (players, currentPlayerID) =>
   players.find((plr) => plr.id !== currentPlayerID);
